@@ -1,0 +1,59 @@
+{
+  "name": "requestservice",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsdown",
+    "lint": "run-s lint:eslint lint:prettier",
+    "lint:eslint": "eslint . --fix",
+    "lint:prettier": "prettier --write .",
+    "test:ts": "npx tsc --build --noEmit",
+    "test:lint": "run-s test:eslint test:prettier",
+    "test:eslint": "eslint .",
+    "test:prettier": "prettier --check .",
+    "changelog": "conventional-changelog -p conventionalcommits -i CHANGELOG.md -s",
+    "update": "ncu -u"
+  },
+  "dependencies": {
+    "ofetch": "^1.5.1"
+  },
+  "optionalDependencies": {
+    "keycloak-js": "^26.2.4"
+  },
+  "devDependencies": {
+    "@eslint/compat": "2.0.5",
+    "@eslint/js": "^10.0.1",
+    "@tsconfig/node24": "24.0.4",
+    "@types/node": "24.12.2",
+    "conventional-changelog": "7.2.0",
+    "conventional-changelog-conventionalcommits": "9.3.1",
+    "eslint": "^10.2.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "62.9.0",
+    "eslint-plugin-unicorn": "64.0.0",
+    "globals": "17.5.0",
+    "npm-check-updates": "22.0.1",
+    "npm-run-all2": "8.0.4",
+    "prettier": "3.8.3",
+    "tsdown": "^0.22.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.3"
+  }
+}
