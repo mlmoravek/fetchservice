@@ -1,4 +1,4 @@
-import RequestService from "@/RequestService";
+import FetchService from "@/FetchService";
 import AbortInterceptor from "@/interceptors/AbortInterceptor";
 import MiddlewareController from "./MiddlewareController";
 
@@ -7,17 +7,17 @@ export default class CrudController<
   DTO extends Record<string, any> | string = Entity,
 > extends MiddlewareController<Entity, DTO> {
   protected readonly abortController: AbortInterceptor;
-  protected readonly root: string;
+  protected readonly path: string;
 
-  constructor(requestService: RequestService, root: string) {
-    super(requestService);
-    this.root = root;
+  constructor(api: FetchService, path: string) {
+    super(api);
+    this.path = path;
 
     // add abort middleware
-    this.abortController = this.enableAbortController(this.root);
+    this.abortController = this.enableAbortController(this.path);
   }
 
-  /** Cancle all running requests with the root path of this controller. */
+  /** Cancle all running requests which relate to the path of this controller. */
   public abort(): void {
     this.abortController.abort();
   }
@@ -28,8 +28,8 @@ export default class CrudController<
    * @returns The created entity object.
    */
   public create(entity: Entity): Promise<Entity> {
-    return this.requestService
-      .post<DTO>(this.root, this.onRequest(entity))
+    return this.api
+      .post<DTO>(this.path, this.onRequest(entity))
       .then(this.onResponse);
   }
 
@@ -39,9 +39,7 @@ export default class CrudController<
    * @returns The entity object.
    */
   public read(id: number | string): Promise<Entity> {
-    return this.requestService
-      .get<DTO>(`${this.root}/${id}`)
-      .then(this.onResponse);
+    return this.api.get<DTO>(`${this.path}/${id}`).then(this.onResponse);
   }
 
   /**
@@ -51,8 +49,8 @@ export default class CrudController<
    * @returns The updated entity object.
    */
   public update(id: number | string, entity: Entity): Promise<Entity> {
-    return this.requestService
-      .put<DTO>(`${this.root}/${id}`, this.onRequest(entity))
+    return this.api
+      .put<DTO>(`${this.path}/${id}`, this.onRequest(entity))
       .then(this.onResponse);
   }
 
@@ -62,6 +60,6 @@ export default class CrudController<
    * @returns `Promise<void>`
    */
   public delete(id: number | string): Promise<void> {
-    return this.requestService.delete(`${this.root}/${id}`);
+    return this.api.delete(`${this.path}/${id}`);
   }
 }

@@ -1,9 +1,9 @@
-import { AbstractRequestInterceptor, InterceptorHookArgs } from "@/Interceptor";
+import { AbstractFetchInterceptor, InterceptorHookArgs } from "@/Interceptor";
 
 /**
- * A RequstService interceptor which adds an `Authorization` header to every request.
+ * A FetchService interceptor which adds an `Authorization` header to every request.
  */
-export default class BearerTokenInterceptor extends AbstractRequestInterceptor {
+export default class BearerTokenInterceptor extends AbstractFetchInterceptor {
   private getToken: () => string | undefined;
 
   /**

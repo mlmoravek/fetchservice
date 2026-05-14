@@ -6,7 +6,7 @@ import Keycloak, {
   type KeycloakInitOptions,
 } from "keycloak-js";
 import AuthService from "./AuthService";
-import type RequestService from "@/RequestService";
+import type FetchService from "@/FetchService";
 
 export type TokenRefreshHandler = (newToken: string) => void;
 
@@ -16,7 +16,7 @@ export interface KeyCloakAuthServiceOptions extends KeycloakServerConfig {
 
 /**
  * The `KeyCloakAuthService` implements an `AuthService` and uses KeyCloak as authentication provider.
- * An access token will be stored and injected in every request, made by the related RequestService.
+ * An access token will be stored and injected in every request, made by the related `FetchService` instance.
  * The access token will be updated automaticaly.
  */
 export default class KeyCloakAuthService extends AuthService {
@@ -26,14 +26,14 @@ export default class KeyCloakAuthService extends AuthService {
 
   /**
    * Creates a new KeyCloak instance with the given properties.
-   * @param requestService - The related RequestService instance.
+   * @param api - The related `FetchService` instance.
    * @param options - Keycloak instance options.
    */
   protected constructor(
-    requestService: RequestService,
+    api: FetchService,
     options: KeyCloakAuthServiceOptions,
   ) {
-    super(requestService);
+    super(api);
 
     // create the internal Keycloak instance
     this.keycloak = new Keycloak(options);
@@ -49,7 +49,7 @@ export default class KeyCloakAuthService extends AuthService {
     this.addAuthorizationHeader(this.getToken);
 
     // adds a request interceptor
-    this.tokenInterceptorId = requestService.addInterceptor({
+    this.tokenInterceptorId = api.addInterceptor({
       onRequest: () => {
         // refreshes the token every time a request is made.
         this.refreshToken(options.minValidity);
@@ -67,8 +67,8 @@ export default class KeyCloakAuthService extends AuthService {
    * logged in without redirecting to login screen if not logged in.
    * @returns `Promise<Boolean>` which defined if an user is authenticated.
    */
-  public authenticateClient(
-    options: KeycloakInitOptions,
+  public connectClient(
+    options: KeycloakInitOptions = {},
     silentSSO = true,
   ): Promise<boolean> {
     return this.keycloak
@@ -154,7 +154,7 @@ export default class KeyCloakAuthService extends AuthService {
   public logout(redirectUri?: string): Promise<Keycloak> {
     // remove old token interceptors
     if (this.tokenInterceptorId) {
-      this.requestService.removeInterceptor(this.tokenInterceptorId);
+      this.api.removeInterceptor(this.tokenInterceptorId);
     }
 
     return this.keycloak.logout({ redirectUri }).then(() => this.keycloak);

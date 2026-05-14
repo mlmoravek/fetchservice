@@ -1,24 +1,35 @@
 {
-  "name": "requestservice",
+  "name": "fetchservices",
+  "description": "A wrapper service to make http fetch requests.",
   "version": "0.0.1",
   "license": "MIT",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
+  "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "homepage": "https://github.com/mlmoravek/fetchservices",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mlmoravek/fetchservices.git"
+  },
   "files": [
     "dist",
     "CHANGELOG.md",
     "README.md",
     "LICENSE"
   ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    }
-  },
+  "keywords": [
+    "fetch",
+    "ofetch",
+    "REST",
+    "microservice",
+    "ajax",
+    "service",
+    "request"
+  ],
   "scripts": {
     "build": "tsdown",
     "lint": "run-s lint:eslint lint:prettier",

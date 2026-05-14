@@ -1,11 +1,11 @@
-import { AbstractRequestInterceptor, InterceptorHookArgs } from "@/Interceptor";
+import { AbstractFetchInterceptor, InterceptorHookArgs } from "@/Interceptor";
 
 /**
- * A RequstService interceptor which checks each request regarding the given url pattern for valid ETag headers
- * and inject existing ETag header in every request.
+ * A FetchService interceptor which checks each request regarding the given url pattern for valid ETag headers
+ * and inject an existing ETag header in every request.
  * @see https://medium.com/airasia-com-tech-blog/etag-101-tips-and-tricks-for-implementation-6072525b487b
  */
-export default class ETagCacheInterceptor extends AbstractRequestInterceptor {
+export default class ETagCacheInterceptor extends AbstractFetchInterceptor {
   private eTagCache = new Map<string, { body: unknown; eTag: string }>();
 
   override onRequest({

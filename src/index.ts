@@ -1,6 +1,6 @@
-// main service exports
-export { default } from "./RequestService";
-export * from "./RequestService";
+// fetch service exports
+export { default } from "./FetchService";
+export * from "./FetchService";
 export * from "./Interceptor";
 
 // interceptor exports

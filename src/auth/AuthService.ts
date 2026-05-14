@@ -1,4 +1,4 @@
-import RequestService from "@/RequestService";
+import FetchService from "@/FetchService";
 import { InterceptorHookArgs } from "@/Interceptor";
 import BearerTokenInterceptor from "@/interceptors/BearerTokenInterceptor";
 
@@ -11,7 +11,7 @@ type UnauthorizedHandler = (
  */
 export default abstract class AuthService {
   static instance?: AuthService;
-  protected readonly requestService: RequestService;
+  protected readonly api: FetchService;
   private bearerTokenInterceptorId?: string;
   private unauthorizedHandler?: UnauthorizedHandler;
 
@@ -23,10 +23,10 @@ export default abstract class AuthService {
     return AuthService.instance;
   }
 
-  constructor(requestService: RequestService = new RequestService()) {
-    this.requestService = requestService;
+  constructor(api: FetchService = new FetchService()) {
+    this.api = api;
     // add custom error interceptor
-    this.requestService.addInterceptor({
+    this.api.addInterceptor({
       onResponseError: this.errorHandler,
     });
 
@@ -35,11 +35,11 @@ export default abstract class AuthService {
   }
 
   /**
-   * Get the `RequestService` instance related to this service.
-   * @returns The `RequestService` instance of this setvice.
+   * Get the `FetchService` instance related to this service.
+   * @returns The `FetchService` instance of this setvice.
    */
-  public getRequestService(): RequestService {
-    return this.requestService;
+  public getFetchService(): FetchService {
+    return this.api;
   }
 
   /**
@@ -93,11 +93,11 @@ export default abstract class AuthService {
   public addAuthorizationHeader(getToken: () => string | undefined): void {
     // remove old BearerTokenInterceptor
     if (this.bearerTokenInterceptorId) {
-      this.requestService.removeInterceptor(this.bearerTokenInterceptorId);
+      this.api.removeInterceptor(this.bearerTokenInterceptorId);
     }
 
     // add a new BearerTokenInterceptor which adds an authorization header in every requests
-    this.bearerTokenInterceptorId = this.requestService.addInterceptor(
+    this.bearerTokenInterceptorId = this.api.addInterceptor(
       new BearerTokenInterceptor(getToken),
     );
   }

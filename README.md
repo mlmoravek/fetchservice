@@ -1,21 +1,40 @@
-# RequestService
+# FetchServices
 
-RequestService is a small, extendable fetch service based on [`ofetch`](https://github.com/unjs/ofetch/) for consistent request handling, support for interceptors, helpers for authentication, and additional controller abstractions.
+<a href="https://www.npmjs.com/package/fetchservices"><img src="https://img.shields.io/npm/v/fetchservices.svg?logo=npm" /></a>
+
+The name given `FetchService` is a lightweight HTTP client fetch service based on [`ofetch`](https://github.com/unjs/ofetch/).
+
+The service provides a simple, type-safe fetch layer for consistent REST operation handling.
+It has built-in support for request/response interceptors, as well as optional authentication token, logging, aborting, and ETag cache helpers.
+
+## Overview
+
+- [FetchService](#api)
+- [Interceptors](#interceptors)
+  - [Built-in interceptors](#built-in-interceptors)
+  - [Custom interceptor](#custom-interceptor)
+- [Authentication](#authentication-provider)
+  - [AuthService](#authservice)
+  - [KeyCloakAuthService](#keycloakauthservice)
+- [Controllers](#controllers)
+  - [BaseController](#basecontroller)
+  - [CrudController](#crudcontroller)
+  - [Middleware support](#middleware-support)
 
 ## Installation
 
 ```bash
-npm install requestservice
+npm install fetchservices
 ```
 
-> `requestservice` is published as an ESM package.
+> `fetchservices` is published as an ESM package only.
 
 ## Quick Start
 
 ```ts
-import RequestService from "requestservice";
+import FetchService from "fetchservices";
 
-const api = new RequestService({ baseURL: "https://api.example.com" });
+const api = new FetchService({ baseURL: "https://api.example.com" });
 
 // GET request
 const users = await api.get<{ id: number; name: string }[]>("/users");
@@ -28,77 +47,77 @@ const created = await api.post<{ id: number; name: string }>("/users", {
 
 ## API
 
-### `new RequestService(options?)`
+**`new FetchService(options?)`**
 
 Create a new HTTP service instance. Pass any valid `ofetch` request options.
 
 ```ts
-const api = new RequestService({ baseURL: "https://api.example.com" });
+const api = new FetchService({ baseURL: "https://api.example.com" });
 ```
 
-### `api.get<T>(url, params?, headers?)`
+**`api.get<T>(url, params?, headers?)`**
 
 Send a `GET` request.
 
-### `api.post<T>(url, body?, params?, headers?)`
+**`api.post<T>(url, body?, params?, headers?)`**
 
 Send a `POST` request.
 
-### `api.put<T>(url, body?, params?, headers?)`
+**`api.put<T>(url, body?, params?, headers?)`**
 
 Send a `PUT` request.
 
-### `api.delete<T>(url, params?, headers?, body?)`
+**`api.delete<T>(url, params?, headers?, body?)`**
 
 Send a `DELETE` request.
 
-### `api.upload<T>(url, data, params?, headers?)`
+**`api.upload<T>(url, data, params?, headers?)`**
 
 Send a multipart file upload request.
 
-### `api.download(url, params?, headers?)`
+**`api.download(url, params?, headers?)`**
 
 Download a binary payload and return an `ArrayBuffer`.
 
-### `api.doRequest<T>(request, options?)`
+**`api.fetch<T>(request, options?)`**
 
 Make a low-level request with a raw `fetch`-style request or options.
 
 ### Singleton
 
-The `RequestService` stores a static singleton instance when created.
+The `FetchService` stores the last created instance as singleton.
 
 ```ts
-import RequestService from "requestservice";
+import FetchService from "fetchservices";
 
-// initialise RequestService
-new RequestService({ baseURL: "https://api.example.com" });
+// create a new FetchService
+new FetchService({ baseURL: "https://api.example.com" });
 
-const api = RequestService.getInstance();
+const api = FetchService.getInstance();
 ```
 
 ## Interceptors
 
-`RequestService` supports request and response interceptors. You can add your own or use the built-in interceptors.
+The `FetchService` supports request and response interceptors. You can add your own or use the built-in interceptors.
 
-An interceptor can be addes with `api.addInterceptor(interceptor)`.  
-Interceptor keys are strings and can be used to removed registered interceptors with `removeInterceptor(key)`.
+An interceptor can be added with `api.addInterceptor(interceptor)`.  
+Interceptor keys are strings and can be used to remove registered interceptors with `removeInterceptor(key)`.
 
-### Built-in interceptor helpers
+### Built-in interceptors
 
 ```ts
-import RequestService from "requestservice";
+import FetchService from "fetchservices";
 import {
   LoggingInterceptor,
   AbortInterceptor,
   BearerTokenInterceptor,
   ETagCacheInterceptor,
-} from "requestservice";
+} from "fetchservices";
 
-// initialise RequestService
-const api = new RequestService({ baseURL: "https://api.example.com" });
+// initialise a new FetchService
+const api = new FetchService({ baseURL: "https://api.example.com" });
 
-// add interceptors
+// add interceptors to the FetchService instance
 const loggerId = api.addInterceptor(new LoggingInterceptor());
 const abortId = api.addInterceptor(new AbortInterceptor());
 const authId = api.addInterceptor(
@@ -107,17 +126,19 @@ const authId = api.addInterceptor(
 const cacheInterceptor = new ETagCacheInterceptor(".*\/users\/.*");
 api.addInterceptor(cacheInterceptor);
 
-// remove interceptor later
+// you can remove any interceptor later on
 api.removeInterceptor(loggerId);
 ```
 
 ### Custom interceptor
 
+You can create custom interceptors using a `class` approach or as a casual `object`.
+
 ```ts
 // class style
-import { AbstractRequestInterceptor } from "requestservice";
+import { AbstractFetchInterceptor } from "fetchservices";
 
-class CustomInterceptor extends AbstractRequestInterceptor {
+class CustomInterceptor extends AbstractFetchInterceptor {
   onRequest({ request, options }) {
     console.debug("starting", request);
   }
@@ -127,15 +148,16 @@ class CustomInterceptor extends AbstractRequestInterceptor {
   }
 }
 
-api.addInterceptor(new CustomInterceptor(".*\/protected\/.*"));
+// add the interceptor to the FetchService instance
+api.addInterceptor(new CustomInterceptor(".*\/api/path\/.*"));
 ```
 
 ```ts
 // object style
-import type { RequestInterceptor } from "requestservice";
+import type { FetchInterceptor } from "fetchservices";
 
-const customInterceptor: RequestInterceptor = {
-  urlPattern: RegExp(".*\/protected\/.*"),
+const customInterceptor: FetchInterceptor = {
+  urlPattern: RegExp(".*\/api/path\/.*"),
 
   onRequest({ request, options }) {
     console.debug("starting", request);
@@ -146,21 +168,21 @@ const customInterceptor: RequestInterceptor = {
   },
 };
 
+// add the interceptor to the FetchService instance
 api.addInterceptor(customInterceptor);
 ```
 
-## Authentication helpers
+## Authentication
 
-The package also includes an `AuthService` and a Keycloak adapter via `KeyCloakAuthService`.
-
-> Note: [`keycloak-js`](https://github.com/keycloak/keycloak-js) is an optional dependency. You need to install it only when you need Keycloak support.
+The package also includes an abstract `AuthService` class, which can be used to implement an authentication workflow with `FetchService` integration.
 
 ### `AuthService`
 
-`AuthService` is an abstract base class for authentication workflows and already integrates with `RequestService`.
+The `AuthService` is an abstract base class for authentication workflows and already integrates with `FetchService`.
+Based on the abstract class, you can implement any authentication provider you like. For an example, look at [`KeyCloakAuthService`](https://github.com/mlmoravek/fetchservices/blob/main/src/auth/KeyCloakAuthService.ts).
 
 ```ts
-import { AuthService } from "requestservice";
+import { AuthService } from "fetchservices";
 
 class MyAuthService extends AuthService {
   isAuthenticated() {
@@ -203,17 +225,34 @@ auth.setUnauthorizedHandler((context) => {
 });
 ```
 
-### `KeyCloakAuthService`
+#### Singleton
 
-`KeyCloakAuthService` requires [`keycloak-js`](https://github.com/keycloak/keycloak-js) as an additional dependency. You need to install it when you want to use the `KeyCloakAuthService` . 
+The `AuthService` stores the last created instance as singleton.
 
 ```ts
-import RequestService, { KeyCloakAuthService } from "requestservice";
+import { AuthService } from "fetchservices";
 
-// initialise RequestService
-const api = new RequestService({ baseURL: "https://api.example.com" });
+class MyAuthService extends AuthService { ... }
 
-// initialise AuthService with the RequestService
+// initialise any AuthService
+new MyAuthService();
+
+const auth = AuthService.getInstance();
+```
+
+### `KeyCloakAuthService`
+
+The `KeyCloakAuthService` implements the abstract `AuthService` for a [Keycloak](https://www.keycloak.org/) provider and requires [`keycloak-js`](https://github.com/keycloak/keycloak-js) as an additional dependency.
+
+> Note: [`keycloak-js`](https://github.com/keycloak/keycloak-js) is an optional dependency. You need to install it only when you want to use this service.
+
+```ts
+import FetchService, { KeyCloakAuthService } from "fetchservices";
+
+// initialise a new FetchService
+const api = new FetchService({ baseURL: "https://api.example.com" });
+
+// initialise Keycloak based AuthService with the FetchService
 const auth = new KeyCloakAuthService(api, {
   url: "https://auth.example.com/auth",
   realm: "myrealm",
@@ -221,40 +260,40 @@ const auth = new KeyCloakAuthService(api, {
   minValidity: 30,
 });
 
-await auth.authenticateClient({ redirectUri: window.location.origin }, true);
+await auth.connectClient({ redirectUri: window.location.origin }, true);
 ```
 
 ## Controllers
 
-The package also exports controller base classes for structured request handling.
+The package also exports controller base classes for structured request handling. A controller provides a way to organise and cluster API endpoints based on entities.
 
 ### `BaseController`
 
-Extend the abstract `BaseController` class to create a structured cluster of api request services.
+Extend the abstract `BaseController` class to create a structured class for api requests.
 
 ```ts
-import RequestService, { BaseController } from "requestservice";
+import FetchService, { BaseController } from "fetchservices";
 
 class MyController extends BaseController {
   fetchSomething() {
-    return this.requestService.get("/items");
+    return this.api.get("/items");
   }
 }
 ```
 
 ### `CrudController`
 
-A simple CRUD controller for REST endpoints.
+This is a simple CRUD controller for REST endpoints that already implement basic CRUD operations.
 
 ```ts
-import RequestService, { CrudController } from "requestservice";
+import FetchService, { CrudController } from "fetchservices";
 
 class UserController extends CrudController<{ id: number; name: string }> {}
 
-// initialise RequestService
-const api = new RequestService({ baseURL: "https://api.example.com" });
+// initialise a new FetchService
+const api = new FetchService({ baseURL: "https://api.example.com" });
 
-// initialise UserController with the RequestService
+// initialise UserController with the FetchService
 const users = new UserController(api, "/users");
 
 await users.create({ id: 0, name: "Alice" });
@@ -265,7 +304,7 @@ await users.delete(1);
 
 ### Middleware support
 
-`CrudController` and `MiddlewareController` expose hooks for request and response transformation.
+The `CrudController` and `MiddlewareController` classes provide hooks for request and response transformation.
 
 ```ts
 class MyController extends CrudController<MyEntity> {
@@ -281,8 +320,8 @@ class MyController extends CrudController<MyEntity> {
 
 ## Exported modules
 
-- `RequestService` – default HTTP client wrapper
-- `RequestInterceptor` / `AbstractRequestInterceptor` – interceptor types and base class
+- `FetchService` – default HTTP client wrapper
+- `FetchInterceptor` / `AbstractFetchInterceptor` – interceptor types and base class
 - `LoggingInterceptor` – logs requests and responses
 - `AbortInterceptor` – adds abort support via `AbortController`
 - `BearerTokenInterceptor` – adds `Authorization: Bearer` headers
@@ -292,3 +331,15 @@ class MyController extends CrudController<MyEntity> {
 - `BaseController` – controller base class with middleware helpers
 - `CrudController` – REST-style create/read/update/delete controller
 - `MiddlewareController` – response/request transformation helpers
+
+## Contributing
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/mlmoravek/fetchservices/tags).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

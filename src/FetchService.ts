@@ -8,41 +8,42 @@ import {
 } from "ofetch";
 import {
   InterceptorHookArgs,
-  RequestInterceptor,
-  RequestInterceptorHooks,
+  FetchInterceptor,
+  InterceptorHooks,
 } from "./Interceptor";
 
-type RequestServiceOptions = Omit<
+type FetchServiceOptions = Omit<
   FetchOptions,
   "onRequest" | "onRequestError" | "onResponse" | "onResponseError"
 >;
 
 /**
- * Provides a service to make http fetch requests.
- * Uses [`ofetch`](https://github.com/unjs/ofetch/) for request handling and supports request interceptors.
- * Interceptors can be used to modify request options, do logging or handle errors globally.
+ * A lightweight HTTP client fetch service built on [`ofetch`](https://github.com/unjs/ofetch/).
+ *
+ * The service provides a simple, type-safe fetch layer for consistent REST operation handling.
+ * It also supports interceptors which can be used to modify request options, do logging or handle errors globally.
  */
-export default class RequestService {
+export default class FetchService {
   /** static singleton instance */
-  private static instance: RequestService | undefined;
+  private static instance: FetchService | undefined;
   /** The created ofetch instance. */
   private readonly api: $Fetch;
-  /** A list of request interceptors. */
-  private readonly interceptors: Map<string, RequestInterceptor> = new Map();
+  /** A list of interceptors. */
+  private readonly interceptors: Map<string, FetchInterceptor> = new Map();
 
   /**
-   * Get the last created `RequestService` instance.
-   * @returns A `RequestService` instance or `undefined` if none is created yet.
+   * Get the last created `FetchService` instance.
+   * @returns A `FetchService` instance or `undefined` if none is created yet.
    */
-  public static getInstance(): RequestService | undefined {
-    return RequestService.instance;
+  public static getInstance(): FetchService | undefined {
+    return FetchService.instance;
   }
 
   /**
-   * Creates a new `RequestService` instance which is a [`ofetch`](https://github.com/unjs/ofetch/) wrapper with addtional functionalities.
-   * @param options - Global request options which will be applied to any request on this instance.
+   * Creates a new `FetchService` instance.
+   * @param options - Valid `ofetch` options which will be applied to any request on this instance.
    */
-  constructor(options: RequestServiceOptions = {}) {
+  constructor(options: FetchServiceOptions = {}) {
     // create ofetch api instance
     this.api = ofetch.create({
       ...options,
@@ -65,39 +66,39 @@ export default class RequestService {
     });
 
     // set static singleton instance
-    RequestService.instance = this;
+    FetchService.instance = this;
   }
 
   /**
-   * Gets the fetch client api instance.
-   * @returns An ofetch instance.
+   * Gets the `ofetch` client api instance.
+   * @returns An `ofetch` instance.
    */
   public getAPI(): $Fetch {
     return this.api;
   }
 
   /**
-   * Adds an request interceptor.
-   * @param interceptor - The `RequestInterceptor` object.
+   * Adds an fetch interceptor.
+   * @param interceptor - The `FetchInterceptor` object.
    * @returns The interceptor key which can be used to remove the interceptor by the `removeInterceptor` function.
    */
-  public addInterceptor(interceptor: RequestInterceptor): string {
+  public addInterceptor(interceptor: FetchInterceptor): string {
     const key = Math.random().toString(16);
     this.interceptors.set(key, interceptor);
     return key;
   }
 
   /**
-   * Gets an request interceptor by its key.
+   * Gets an fetch interceptor by its key.
    * @param key - The interceptor key received by `addInterceptor` function.
    * @returns Returns the interceptor associated with the specified key or `undefined` if no interceptor is associated with the specified key.
    */
-  public getInterceptor(key: string): RequestInterceptor | undefined {
+  public getInterceptor(key: string): FetchInterceptor | undefined {
     return this.interceptors.get(key);
   }
 
   /**
-   * Removes an request interceptor.
+   * Removes an fetch interceptor.
    * @param key - The interceptor key received by the `addInterceptor` function.
    */
   public removeInterceptor(key: string): void {
@@ -110,7 +111,7 @@ export default class RequestService {
    * @param options - An object containing any custom settings that you want to apply to the request.
    * @returns An ofetch response object.
    */
-  public doRequest<T, R extends ResponseType = "json">(
+  public fetch<T, R extends ResponseType = "json">(
     request: FetchRequest,
     options?: FetchOptions<R>,
   ): Promise<MappedResponseType<R, T>> {
@@ -134,7 +135,7 @@ export default class RequestService {
       params,
       method: "GET",
     };
-    return this.doRequest<T>(url, config);
+    return this.fetch<T>(url, config);
   }
 
   /**
@@ -157,7 +158,7 @@ export default class RequestService {
       body,
       method: "POST",
     };
-    return this.doRequest<T>(url, config);
+    return this.fetch<T>(url, config);
   }
 
   /**
@@ -180,7 +181,7 @@ export default class RequestService {
       body,
       method: "PUT",
     };
-    return this.doRequest<T>(url, config);
+    return this.fetch<T>(url, config);
   }
 
   /**
@@ -203,7 +204,7 @@ export default class RequestService {
       body,
       method: "DELETE",
     };
-    return this.doRequest<T>(url, config);
+    return this.fetch<T>(url, config);
   }
 
   /**
@@ -229,7 +230,7 @@ export default class RequestService {
       body: data,
       method: "POST",
     };
-    return this.doRequest<T>(url, config);
+    return this.fetch<T>(url, config);
   }
 
   /**
@@ -250,7 +251,7 @@ export default class RequestService {
       responseType: "arrayBuffer",
       method: "GET",
     };
-    return this.doRequest<ArrayBuffer, "arrayBuffer">(url, config);
+    return this.fetch<ArrayBuffer, "arrayBuffer">(url, config);
   }
 
   /**
@@ -277,7 +278,7 @@ export default class RequestService {
       responseType: "arrayBuffer",
       method: "POST",
     };
-    return this.doRequest<ArrayBuffer, "arrayBuffer">(url, config);
+    return this.fetch<ArrayBuffer, "arrayBuffer">(url, config);
   }
 
   /**
@@ -286,7 +287,7 @@ export default class RequestService {
    * @param options - The hook options.
    */
   private callInterceptors<
-    K extends keyof RequestInterceptorHooks,
+    K extends keyof InterceptorHooks,
     R extends ResponseType,
   >(key: K, options: InterceptorHookArgs<K, R>): void {
     this.interceptors.forEach((interceptor) => {

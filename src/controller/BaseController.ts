@@ -1,21 +1,21 @@
-import type RequestService from "@/RequestService";
+import type FetchService from "@/FetchService";
 import AbortInterceptor from "@/interceptors/AbortInterceptor";
 import ETagCacheInterceptor from "@/interceptors/ETagCacheInterceptor";
 import LoggingInterceptor from "@/interceptors/LoggingInterceptor";
 
 export default abstract class BaseController {
-  protected readonly requestService: RequestService;
+  protected readonly api: FetchService;
 
-  constructor(requestService: RequestService) {
-    this.requestService = requestService;
+  constructor(api: FetchService) {
+    this.api = api;
   }
 
   /**
-   * Gets the `RequestService` instance related to this controller.
-   * @returns The `RequestService` instance of this controller.
+   * Gets the `FetchService` instance related to this controller.
+   * @returns The `FetchService` instance of this controller.
    */
-  public getRequestService(): RequestService {
-    return this.requestService;
+  public getFetchService(): FetchService {
+    return this.api;
   }
 
   /**
@@ -25,7 +25,7 @@ export default abstract class BaseController {
    */
   public enableCache(root: string): ETagCacheInterceptor {
     const interceptor = new ETagCacheInterceptor(`.*${root}/.*`);
-    this.requestService.addInterceptor(interceptor);
+    this.api.addInterceptor(interceptor);
     return interceptor;
   }
 
@@ -36,7 +36,7 @@ export default abstract class BaseController {
    */
   public enableAbortController(root: string): AbortInterceptor {
     const interceptor = new AbortInterceptor(`.*${root}/.*`);
-    this.requestService.addInterceptor(interceptor);
+    this.api.addInterceptor(interceptor);
     return interceptor;
   }
 
@@ -47,7 +47,7 @@ export default abstract class BaseController {
    */
   public enableLogging(root: string): LoggingInterceptor {
     const interceptor = new LoggingInterceptor(`.*${root}/.*`);
-    this.requestService.addInterceptor(interceptor);
+    this.api.addInterceptor(interceptor);
     return interceptor;
   }
 }
