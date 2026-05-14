@@ -1,7 +1,7 @@
 {
   "name": "fetchservices",
   "description": "A wrapper service to make http fetch requests.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "license": "MIT",
   "private": false,
   "type": "module",
