@@ -36,7 +36,7 @@ jobs:
         run: npm run build
 
       - name: Install release dependency 📦
-        run: npm i extract-changelog-release
+        run: npm i -D extract-changelog-release
 
       - name: Generate release body 📝
         run: npx extract-changelog-release > RELEASE_BODY.md
