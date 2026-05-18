@@ -29,10 +29,7 @@ export class KeyCloakAuthService extends AuthService {
    * @param api - The related `FetchService` instance.
    * @param options - Keycloak instance options.
    */
-  protected constructor(
-    api: FetchService,
-    options: KeyCloakAuthServiceOptions,
-  ) {
+  constructor(api: FetchService, options: KeyCloakAuthServiceOptions) {
     super(api);
 
     // create the internal Keycloak instance
