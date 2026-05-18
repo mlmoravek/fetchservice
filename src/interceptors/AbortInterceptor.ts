@@ -1,4 +1,4 @@
-import { AbstractFetchInterceptor, InterceptorHookArgs } from "@/Interceptor";
+import { AbstractFetchInterceptor, InterceptorHookArgs } from "@/index";
 
 /**
  * Cancels all running requests related to the last created `AbortInterceptor` instance.
@@ -16,7 +16,7 @@ export function abortRequests(timeout?: number): void {
  * A FetchService interceptor which adds an `AbortController` signal to every request.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/AbortController}
  */
-export default class AbortInterceptor extends AbstractFetchInterceptor {
+export class AbortInterceptor extends AbstractFetchInterceptor {
   static instance?: AbortInterceptor;
 
   /**

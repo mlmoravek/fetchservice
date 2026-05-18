@@ -13,7 +13,7 @@ It has built-in support for request/response interceptors, as well as optional a
 - [Interceptors](#interceptors)
   - [Built-in interceptors](#built-in-interceptors)
   - [Custom interceptor](#custom-interceptor)
-- [Authentication](#authentication-provider)
+- [Authentication](#authentication)
   - [AuthService](#authservice)
   - [KeyCloakAuthService](#keycloakauthservice)
 - [Controllers](#controllers)
@@ -112,7 +112,7 @@ import {
   AbortInterceptor,
   BearerTokenInterceptor,
   ETagCacheInterceptor,
-} from "fetchservices";
+} from "fetchservices/interceptors";
 
 // initialise a new FetchService
 const api = new FetchService({ baseURL: "https://api.example.com" });
@@ -182,7 +182,7 @@ The `AuthService` is an abstract base class for authentication workflows and alr
 Based on the abstract class, you can implement any authentication provider you like. For an example, look at [`KeyCloakAuthService`](https://github.com/mlmoravek/fetchservices/blob/main/src/auth/KeyCloakAuthService.ts).
 
 ```ts
-import { AuthService } from "fetchservices";
+import { AuthService } from "fetchservices/auth";
 
 class MyAuthService extends AuthService {
   isAuthenticated() {
@@ -230,7 +230,7 @@ auth.setUnauthorizedHandler((context) => {
 The `AuthService` stores the last created instance as singleton.
 
 ```ts
-import { AuthService } from "fetchservices";
+import { AuthService } from "fetchservices/auth";
 
 class MyAuthService extends AuthService { ... }
 
@@ -247,7 +247,8 @@ The `KeyCloakAuthService` implements the abstract `AuthService` for a [Keycloak]
 > Note: [`keycloak-js`](https://github.com/keycloak/keycloak-js) is an optional dependency. You need to install it only when you want to use this service.
 
 ```ts
-import FetchService, { KeyCloakAuthService } from "fetchservices";
+import FetchService from "fetchservices";
+import { KeyCloakAuthService } from "fetchservices/auth";
 
 // initialise a new FetchService
 const api = new FetchService({ baseURL: "https://api.example.com" });
@@ -272,7 +273,8 @@ The package also exports controller base classes for structured request handling
 Extend the abstract `BaseController` class to create a structured class for api requests.
 
 ```ts
-import FetchService, { BaseController } from "fetchservices";
+import FetchService from "fetchservices";
+import { BaseController } from "fetchservices/controller";
 
 class MyController extends BaseController {
   fetchSomething() {
@@ -286,7 +288,8 @@ class MyController extends BaseController {
 This is a simple CRUD controller for REST endpoints that already implement basic CRUD operations.
 
 ```ts
-import FetchService, { CrudController } from "fetchservices";
+import FetchService from "fetchservices";
+import { BaseController } from "fetchservices/controller";
 
 class UserController extends CrudController<{ id: number; name: string }> {}
 
@@ -307,6 +310,8 @@ await users.delete(1);
 The `CrudController` and `MiddlewareController` classes provide hooks for request and response transformation.
 
 ```ts
+import { CrudController } from "fetchservices/controller";
+
 class MyController extends CrudController<MyEntity> {
   protected onRequest(entity: MyEntity) {
     return { ...entity, timestamp: Date.now() };

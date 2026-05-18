@@ -10,7 +10,7 @@ import {
   InterceptorHookArgs,
   FetchInterceptor,
   InterceptorHooks,
-} from "./Interceptor";
+} from "@/index";
 
 type FetchServiceOptions = Omit<
   FetchOptions,
@@ -23,7 +23,7 @@ type FetchServiceOptions = Omit<
  * The service provides a simple, type-safe fetch layer for consistent REST operation handling.
  * It also supports interceptors which can be used to modify request options, do logging or handle errors globally.
  */
-export default class FetchService {
+export class FetchService {
   /** static singleton instance */
   private static instance: FetchService | undefined;
   /** The created ofetch instance. */

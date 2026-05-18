@@ -1,8 +1,8 @@
-import FetchService from "@/FetchService";
-import AbortInterceptor from "@/interceptors/AbortInterceptor";
-import MiddlewareController from "./MiddlewareController";
+import { FetchService } from "@/index";
+import { AbortInterceptor } from "@/interceptors";
+import { MiddlewareController } from "@/controller";
 
-export default class CrudController<
+export class CrudController<
   Entity extends Record<string, any> | string,
   DTO extends Record<string, any> | string = Entity,
 > extends MiddlewareController<Entity, DTO> {

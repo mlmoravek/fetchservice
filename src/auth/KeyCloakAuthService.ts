@@ -5,8 +5,8 @@ import Keycloak, {
   type KeycloakProfile,
   type KeycloakInitOptions,
 } from "keycloak-js";
-import AuthService from "./AuthService";
-import type FetchService from "@/FetchService";
+import { AuthService } from "@/auth";
+import type { FetchService } from "@/index";
 
 export type TokenRefreshHandler = (newToken: string) => void;
 
@@ -19,7 +19,7 @@ export interface KeyCloakAuthServiceOptions extends KeycloakServerConfig {
  * An access token will be stored and injected in every request, made by the related `FetchService` instance.
  * The access token will be updated automaticaly.
  */
-export default class KeyCloakAuthService extends AuthService {
+export class KeyCloakAuthService extends AuthService {
   private readonly keycloak: Keycloak;
   private tokenRefreshHandler?: TokenRefreshHandler;
   private tokenInterceptorId;

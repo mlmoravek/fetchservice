@@ -1,6 +1,6 @@
-import BaseController from "./BaseController";
+import { BaseController } from "@/controller";
 
-export default abstract class MiddlewareController<
+export abstract class MiddlewareController<
   Entity = unknown,
   DTO = Entity,
 > extends BaseController {

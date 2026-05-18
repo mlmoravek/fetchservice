@@ -1,9 +1,11 @@
-import type FetchService from "@/FetchService";
-import AbortInterceptor from "@/interceptors/AbortInterceptor";
-import ETagCacheInterceptor from "@/interceptors/ETagCacheInterceptor";
-import LoggingInterceptor from "@/interceptors/LoggingInterceptor";
+import { FetchService } from "@/index";
+import {
+  AbortInterceptor,
+  ETagCacheInterceptor,
+  LoggingInterceptor,
+} from "@/interceptors";
 
-export default abstract class BaseController {
+export abstract class BaseController {
   protected readonly api: FetchService;
 
   constructor(api: FetchService) {

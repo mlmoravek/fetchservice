@@ -1,9 +1,9 @@
-import { AbstractFetchInterceptor, InterceptorHookArgs } from "@/Interceptor";
+import { AbstractFetchInterceptor, InterceptorHookArgs } from "@/index";
 
 /**
  * A FetchService interceptor which adds an `console.debug` output to every request.
  */
-export default class LoggingInterceptor extends AbstractFetchInterceptor {
+export class LoggingInterceptor extends AbstractFetchInterceptor {
   // log request
   override onRequest({
     request,

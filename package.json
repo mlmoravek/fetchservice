@@ -5,9 +5,13 @@
   "license": "MIT",
   "private": false,
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "exports": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./auth": "./dist/auth/index.js",
+    "./controller": "./dist/controller/index.js",
+    "./interceptors": "./dist/interceptors/index.js",
+    "./package.json": "./package.json"
+  },
   "types": "./dist/index.d.ts",
   "sideEffects": false,
   "homepage": "https://github.com/mlmoravek/fetchservices",

@@ -1,6 +1,6 @@
-import FetchService from "@/FetchService";
-import { InterceptorHookArgs } from "@/Interceptor";
-import BearerTokenInterceptor from "@/interceptors/BearerTokenInterceptor";
+import { FetchService } from "@/index";
+import { InterceptorHookArgs } from "@/index";
+import { BearerTokenInterceptor } from "@/interceptors";
 
 type UnauthorizedHandler = (
   context: InterceptorHookArgs<"onResponseError">,
@@ -9,7 +9,7 @@ type UnauthorizedHandler = (
 /**
  * An Authentication and Authorization service template.
  */
-export default abstract class AuthService {
+export abstract class AuthService {
   static instance?: AuthService;
   protected readonly api: FetchService;
   private bearerTokenInterceptorId?: string;
