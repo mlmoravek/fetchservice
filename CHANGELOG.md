@@ -1,3 +1,9 @@
+## [0.2.1](https://github.com/mlmoravek/fetchservices/compare/v0.2.0...v0.2.1) (2026-05-18)
+
+### Bug Fixes
+
+* remove `protected` from KeyCloakAuthService constructor ([86174ca](https://github.com/mlmoravek/fetchservices/commit/86174cad915a118e615b509f629e5efe54104729))
+
 ## [0.2.0](https://github.com/mlmoravek/fetchservices/compare/v0.1.0...v0.2.0) (2026-05-18)
 
 ### Features
