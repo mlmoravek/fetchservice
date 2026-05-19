@@ -26,8 +26,8 @@ export abstract class AuthService {
   constructor(api: FetchService = new FetchService()) {
     this.api = api;
     // add custom error interceptor
-    this.api.addInterceptor({
-      onResponseError: this.errorHandler,
+    api.addInterceptor({
+      onResponseError: (ctx) => this.errorHandler(ctx),
     });
 
     // set static singleton instance

@@ -298,7 +298,7 @@ export class FetchService {
         matchesRegex(options.request, interceptor.urlPattern)
       ) {
         // @ts-expect-error idk whats going on here
-        handler(options);
+        handler.bind(interceptor)(options);
       }
     });
   }

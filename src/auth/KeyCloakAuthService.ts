@@ -42,15 +42,12 @@ export class KeyCloakAuthService extends AuthService {
       this.refreshToken(options.minValidity);
     };
 
-    // set Authorization Bearer token as header
-    this.addAuthorizationHeader(this.getToken);
+    // set Authorization Bearer token header
+    this.addAuthorizationHeader(() => this.getToken());
 
-    // adds a request interceptor
+    // adds a request interceptor that refreshes the token every time a request is made
     this.tokenInterceptorId = api.addInterceptor({
-      onRequest: () => {
-        // refreshes the token every time a request is made.
-        this.refreshToken(options.minValidity);
-      },
+      onRequest: () => this.refreshToken(options.minValidity),
     });
   }
 
