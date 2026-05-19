@@ -1,3 +1,9 @@
+## [0.2.2](https://github.com/mlmoravek/fetchservices/compare/v0.2.1...v0.2.2) (2026-05-19)
+
+### Bug Fixes
+
+* correct function call context ([afbf4ed](https://github.com/mlmoravek/fetchservices/commit/afbf4ed880b4fb56fe8158a9a3d6b90b5c8f93a0))
+
 ## [0.2.1](https://github.com/mlmoravek/fetchservices/compare/v0.2.0...v0.2.1) (2026-05-18)
 
 ### Bug Fixes
