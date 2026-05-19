@@ -19,10 +19,8 @@ export class ETagCacheInterceptor extends AbstractFetchInterceptor {
 
     if (this.eTagCache.has(url)) {
       const eTag = this.eTagCache.get(url);
-      options.headers = Object.assign(options.headers ?? {}, {
-        // If-None-Match = ETag from the cache, if not present send empty string
-        "If-None-Match": eTag?.eTag,
-      });
+      // If-None-Match = ETag from the cache, if not present send empty string
+      options.headers.set("If-None-Match", eTag?.eTag ?? "");
     }
   }
 

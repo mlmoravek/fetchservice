@@ -30,10 +30,8 @@ export class BearerTokenInterceptor extends AbstractFetchInterceptor {
   override onRequest({ options }: InterceptorHookArgs<"onRequest">): void {
     const token = this.getToken();
     if (token) {
-      // inject baerer token header
-      options.headers = Object.assign(options.headers ?? {}, {
-        Authorization: `Bearer ${token}`,
-      });
+      // add baerer token header
+      options.headers.set("Authorization", `Bearer ${token}`);
     }
   }
 }
