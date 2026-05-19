@@ -1,3 +1,9 @@
+## [0.2.3](https://github.com/mlmoravek/fetchservices/compare/v0.2.2...v0.2.3) (2026-05-19)
+
+### Bug Fixes
+
+* correct setting headers ([dded09b](https://github.com/mlmoravek/fetchservices/commit/dded09babfd0da3fa782d8798ec9a9a5c8f379ec))
+
 ## [0.2.2](https://github.com/mlmoravek/fetchservices/compare/v0.2.1...v0.2.2) (2026-05-19)
 
 ### Bug Fixes
